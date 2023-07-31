@@ -1,0 +1,306 @@
+<html>
+
+  <head>
+    <meta
+      name='viewport'
+      content='width=device-width, initial-scale=1.0, viewport-fit=cover'
+    />
+    <title>RJ Agency Bill</title>
+    <style>
+      @import
+      url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900");
+      @page { size: A4 portait; padding-top: 50px; } body { font-family:
+      "Poppins", sans-serif !important; font-size: 14px; background-color:
+      #f9f9f9; margin: 0px; letter-spacing: normal !important; } .container,
+      table { width: 100%; } p { margin: 0px; } .align-left { text-align: left;
+      } .align-center { text-align: center;} .align-right { text-align: right; } 
+      .report-header { background-color:white; padding: 5px 50px; } 
+      .report-footer { background-color:white; padding: 5px 50px; }
+      .heading { font-weight: 800; font-size: 24px;} .content-container { padding: 0px 50px; } 
+      .content-heading {font-weight: 600; font-size: 16px; color: #444f63; } 
+      .table-heading {font-weight: 400; font-size: 14px; color: #444f63; padding: 5px;} 
+      .table-content {font-weight: 300; font-size: 12px; color: #444f63; padding: 5px; }.title { font-weight:
+      300; font-size: 12px; color: #444f63; } .value { font-weight: 600;
+      font-size: 12px; color: #444f63; margin-left: 5px; } .line { font-weight:
+      600; font-size: 12px; color: #444f63; margin-left: 0px; } .subtitle {
+      font-weight: 300; font-size: 10px; color: #444f63; } .subvalue {
+      font-weight: 600; font-size: 10px; color: #444f63; margin-left: 5px;
+      word-break: break-all; } hr { border-color: #dbe0e9; margin: 2px 0px; }
+      .card-wrapper { margin: 2px 0px; border-radius: 6px; background-color:
+      rgba(241, 243, 244, 1); padding: 25px; } table { width: 100%;
+      table-layout: fixed; } .signature-container { padding: 20px 0px; }
+      .signature-container td { width: 50%; } .card-list { padding: 10px 0px; }
+      .signer-info-container { display: flex; justify-content: space-between; }
+      .signer-info-heading { font-weight: 600; font-size: 16px; color: #444f63;
+      margin-bottom: 0px; } .footer-wrapper { padding: 20px 0px;
+      page-break-inside: avoid !important; }
+      .certification-completion-left-column { width: 50%; }
+      .certification-completion-right-column { width: 50%; } .event-log-left {
+      width: 40%; } .event-log-middle { width: 30%; } .event-log-right { width:
+      30%; } .report-image { max-width: 100px; max-height: 80px; } .mt-10 {
+      margin-top: 10px; }  .signature-event-wrapper { page-break-inside: avoid
+      !important; }.signer-information-wrapper { page-break-inside: avoid
+      !important; }.container-details { padding: 20px; } .firstTable { width: 100%; max-width: 100%;
+      margin-bottom: 1rem; background-color: #f0efef; border: none; border-collapse: collapse; padding:
+      0.5rem; } .firstTable td { border: 1px; border-collapse: collapse;} .firstTable th { border-collapse: collapse; border: 1px solid black;
+      } .secondTable { width: 100%; max-width: 100%; margin-bottom: 1rem;
+      border: 1px solid #F8F8F8; border-collapse: collapse; padding: 1rem; }
+      .secondTable td { border: 1px solid #F8F8F8; padding: 1rem; } .secondTable
+      th { border: 1px solid #F8F8F8; background-color: #F8F8F8; padding: 1rem;
+      } table.reportInfoTable { width: 100%; max-width: 100%; margin-bottom:
+      1rem; background-color: #F8F8F8; border: none; } .ml-auto { margin-left: auto !important; } .mr-auto { margin-right: auto
+      !important; } .lato { font-family: "Lato",
+      sans-serif; font-weight: 300; } .lato-regular { font-family: "Lato",
+      sans-serif; font-weight: normal; } .lato-semi-bold { font-family: "Lato",
+      sans-serif !important; font-weight: 600 !important; } .lato-bold {
+      font-family: "Lato", sans-serif !important; font-weight: 700 !important; }
+      .lato-extra-bold { font-family: "Lato", sans-serif; font-weight: 900; }
+    </style>
+  </head>
+
+  <body>
+    <div class='container'>
+      <div class='report-header'>
+        <table>
+          <tr>
+            <td width='50%' class='align-center'>
+              <p class='heading'>RJ GAS AGENCY</p>
+              <p class='value'>1768-B, Sri Bhairava Complex, Thadagam Road, Velandipalayam,</p>
+              <p class='value'>Oppsite Maharaja Super Market, Coimbatore - 641 025.</p>
+              <p class='value'>Phone: 2440030, 2449977, 3576016</p>
+            </td>
+            <td width='30%' class='align-right'>
+                <img src='{{logo}}' width='200px' />
+                <p class='value' style="margin-top: 10px;">GSTIN : 33AACFR5752L1Z0</p>
+                <p class='value'>DISTRIBUTOR CODE : 114606</p>
+            </td>
+            {{!-- <td width='30%' class='align-right'>
+                <p class='content-heading' style="margin-top: 10px;">GSTIN : 33AACFR5752L1Z0</p>
+                <p class='content-heading'>DISTRIBUTOR CODE : 114606</p>
+            </td> --}}
+          </tr>
+        </table>
+      </div>
+      <div class='content-container'>
+        <div class='card-wrapper'>
+                <p class='content-heading align-center'>RETAIL INVOICE / CASH MEMO</p>
+                <hr />
+                <table class='certification-completion-container mt-10'>
+                    <tr>
+                    <td class='certification-completion-left-column'>
+                        <span class='title'>Name:</span>
+                        <span class='value'>{{customerName}}</span>
+                    </td>
+                    <td class='certification-completion-right-column'>
+                        <span class='title'>Mobile Number:</span>
+                        <span class='value'>{{customerMobileNumber}}</span>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td class='certification-completion-left-column'>
+                        <span class='title'>Billing Date</span>
+                        <span class='value'>{{date}}</span>
+                    </td>
+                    <td class='certification-completion-right-column'>
+                        <span class='title'>Bill No:</span>
+                        <span class='value'>{{billNo}}</span>
+                    </td>
+                    </tr>
+                </table>
+                <table class='firstTable'>
+                    <thead>
+                        <tr>
+                            <th scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>S No</span>
+                            </th>
+                            <th scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>Particulars</span>
+                            </th>
+                            <th scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>Rate</span>
+                            </th>
+                            <th scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>Quantity</span>
+                            </th>
+                            <th scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>Amount</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>  
+                        {{#items}}
+                        <tr>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-content'>{{@index}}</span>
+                            </th>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-content'>{{name}}</span>
+                            </th>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-content'>{{price}}</span>
+                            </th>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-content'>{{quantity}}</span>
+                            </th>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-content'>{{total}}</span>
+                            </th>
+                        </tr>
+                        {{/items}}
+                        <tr>
+                            <th colspan="4" scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>GST - 18%</span>
+                            </th>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-heading'>{{gst}}</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>Discount</span>
+                            </th>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-heading'>{{discount}}</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" scope='row' class='f12 tl mr-auto ml-auto'>
+                                <span class='table-heading'>Total</span>
+                            </th>
+                            <th scope='row' class='f12 tl align-left'>
+                                <span class='table-heading'>{{totalPrice}}</span>
+                            </th>
+                        </tr>
+                </tbody>
+                </table>
+            
+        </div>
+      </div>
+      <div class='report-footer'>
+        <table>
+            <tr>
+                <td width='30%' class='align-left'>
+                    <p class='content-heading' style="margin-top: 2px;">Customer copy</p>
+                </td>
+            </tr>
+            <tr>
+                <td width='30%' class='align-right'>
+                    <p class='content-heading' style="margin-top: 2px;">Billed By: {{currentUser}}</p>
+                </td>
+            </tr>
+        </table>
+      </div>
+      <br>
+      <hr>
+      <br>
+      <div class='content-container'>
+        <div class='card-wrapper'>
+            <p class='content-heading align-center'>RETAIL INVOICE / CASH MEMO</p>
+            <hr />
+            <table class='certification-completion-container mt-10'>
+                <tr>
+                <td class='certification-completion-left-column'>
+                    <span class='title'>Name:</span>
+                    <span class='value'>{{customerName}}</span>
+                </td>
+                <td class='certification-completion-right-column'>
+                    <span class='title'>Mobile Number:</span>
+                    <span class='value'>{{customerMobileNumber}}</span>
+                </td>
+                </tr>
+                <tr>
+                <td class='certification-completion-left-column'>
+                    <span class='title'>Billing Date</span>
+                    <span class='value'>{{date}}</span>
+                </td>
+                <td class='certification-completion-right-column'>
+                    <span class='title'>Bill No:</span>
+                    <span class='value'>{{billNo}}</span>
+                </td>
+                </tr>
+            </table>
+            <table class='firstTable'>
+                <thead>
+                    <tr>
+                        <th scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>S No</span>
+                        </th>
+                        <th scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>Particulars</span>
+                        </th>
+                        <th scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>Rate</span>
+                        </th>
+                        <th scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>Quantity</span>
+                        </th>
+                        <th scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>Amount</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>  
+                    {{#items}}
+                    <tr>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-content'>{{@index}}</span>
+                        </th>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-content'>{{name}}</span>
+                        </th>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-content'>{{price}}</span>
+                        </th>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-content'>{{quantity}}</span>
+                        </th>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-content'>{{total}}</span>
+                        </th>
+                    </tr>
+                    {{/items}}
+                    <tr>
+                        <th colspan="4" scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>GST - 18%</span>
+                        </th>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-heading'>{{gst}}</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="4" scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>Discount</span>
+                        </th>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-heading'>{{discount}}</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="4" scope='row' class='f12 tl mr-auto ml-auto'>
+                            <span class='table-heading'>Total</span>
+                        </th>
+                        <th scope='row' class='f12 tl align-left'>
+                            <span class='table-heading'>{{totalPrice}}</span>
+                        </th>
+                    </tr>
+            </tbody>
+            </table>
+        </div>
+      </div>
+      <div class='report-footer'>
+        <table>
+            <tr>
+                <td width='30%' class='align-left'>
+                    <p class='content-heading' style="margin-top: 2px;">Office copy</p>
+                </td>
+            </tr>
+            <tr>
+                <td width='30%' class='align-right'>
+                    <p class='content-heading' style="margin-top: 2px;">Billed By: {{currentUser}}</p>
+                </td>
+            </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
