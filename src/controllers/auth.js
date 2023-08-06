@@ -1,28 +1,57 @@
-const User = require("../models/user");
-const jsonwebtoken = require("jsonwebtoken");
-JWT_SECRET = process.env.JWT_SECRET
+const Users = require("../models/users");
+const JWT = require("jsonwebtoken");
+const Constants = require('../helpers/constants');
+const { JWT_SECRET } = process.env;
+const bcrypt = require('bcrypt');
 
+function comparePasswords(password, hashedPassword, callback) {
+    bcrypt.compare(password, hashedPassword, (error, match) => {
+      if (error) {
+        callback(error, null);
+        return;
+      }
+      callback(null, match);
+    });
+  }
+  
 function login(userDetails, callback) {
-    let query = {
-        email: userDetails.email
-    };
+    const { email, password } = userDetails;
 
-    User.findOne(query, function (err, foundUser) {
+    Users.findOne({ email }, (err, foundUser) => {
         if (err) {
-            callback(err, null);
+            const response = {
+                status: Constants.STATUS_CODE.BAD_REQUEST,
+                msg: err,
+            };
+            callback(response, null);
             return;
         }
 
-        if (foundUser.password == userDetails.password) {
-            response = {
-                token: jsonwebtoken.sign({ user: userDetails.email }, JWT_SECRET),
-                msg: "Login Successful"
+        comparePasswords(password, foundUser.password, (compareErr, isMatch) => {
+            if (compareErr) {
+                const response = {
+                    status: Constants.STATUS_CODE.BAD_REQUEST,
+                    msg: Constants.ERROR_MSGS.AUTH_FAIL,
+                };
+                callback(response, null);
+                return;
             }
-            
-            callback(null, response);
-        } else {
-            callback("Invalid Credentials", null);
-        }
+
+            if (isMatch) {
+                const response = {
+                    status: Constants.STATUS_CODE.OK,
+                    msg: Constants.INFO_MSGS.SUCCESS,
+                    token: JWT.sign({ user: foundUser.email, userId: foundUser._id }, JWT_SECRET),
+                };
+                callback(null, response);
+            } else {
+                const response = {
+                status: Constants.STATUS_CODE.BAD_REQUEST,
+                msg: Constants.ERROR_MSGS.AUTH_FAIL,
+                };
+                callback(response, null);
+            }
+        });
     });
 }
 

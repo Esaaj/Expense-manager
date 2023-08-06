@@ -15,7 +15,8 @@ module.exports = {
     SERVER_TIMEOUT: 504,
   },
   ERROR_MSGS: {
-    AUTH_FAIL: 'Authentication failed.',
+    
+    AUTH_FAIL: 'Invalid Credentials.',
     AUTH_HEADER_MISSING: 'AccessKey and SecretKey is required',
     INVALID_AUTH_HEADER: 'AccessKey and SecretKey is not valid',
     INACTIVE_STATE: 'Subscription is not in active state',
