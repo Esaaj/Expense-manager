@@ -7,5 +7,9 @@ module.exports = {
         'income',
         'transfer'
     ],
+    interestType: [
+        'fixed',
+        'variable'
+    ]
 };
   
