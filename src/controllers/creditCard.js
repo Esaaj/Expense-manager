@@ -1,103 +1,80 @@
 const CreditCard = require('../models/creditCard');
 const { validateCreditCard } = require('../validation/creditCard');
 const Constants = require('../helpers/constants');
+const Response = require('../helpers/responses'); // Import the Response module
 
-// Create a new credit card
-const addCreditCard = (request, callback) => {
-    const { userId } = request;
-    const cardData = request.body;
+async function addCreditCard(request, response) {
+    try {
+        const { userId } = request;
+        const cardData = request.body;
 
-    // Validate credit card data
-    const { error } = validateCreditCard(cardData);
-    if (error) {
-        const response = {
-            status: Constants.STATUS_CODE.BAD_REQUEST,
-            msg: error.details[0].message,
-        };
-        return callback(response, null);
+        // Validate credit card data
+        const { error } = validateCreditCard(cardData);
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
+        }
+
+        cardData.userId = userId;
+
+        const newCard = await CreditCard.create(cardData);
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, newCard);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
+}
 
-    cardData.userId = userId;
+async function getCreditCards(request, response) {
+    try {
+        const { userId } = request;
 
-    CreditCard.create(cardData, (err, newCard) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, newCard);
-    });
-};
-
-// Get all credit cards for a user
-const getCreditCards = (request, callback) => {
-    const { userId } = request;
-
-    const query = {
-        userId,
-        'removed.isRemoved': false,
-    };
-
-    CreditCard.find(query, (err, cards) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, cards);
-    });
-};
-
-// Update an existing credit card
-const updateCreditCard = (request, callback) => {
-    const { cardId, ...rest } = request.body;
-    const cardDetails = rest;
-
-    // Validate credit card details
-    const { error } = validateCreditCard(cardDetails);
-    if (error) {
-        const response = {
-            status: Constants.STATUS_CODE.BAD_REQUEST,
-            msg: error.details[0].message,
+        const query = {
+            userId,
+            'removed.isRemoved': false,
         };
-        return callback(response, null);
+
+        const cards = await CreditCard.find(query);
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, cards);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
+}
 
-    CreditCard.findByIdAndUpdate(cardId, cardDetails, { new: true }, (err, updatedCard) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
+async function updateCreditCard(request, response) {
+    try {
+        const { cardId, ...rest } = request.body;
+        const cardDetails = rest;
+
+        // Validate credit card details
+        const { error } = validateCreditCard(cardDetails);
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
         }
-        callback(null, updatedCard);
-    });
-};
 
-// Delete a credit card
-const deleteCreditCard = (request, callback) => {
-    const { cardId } = request.body;
-    const removed = {
-        isRemoved: true,
-        removedOn: new Date(),
-    };
+        const updatedCard = await CreditCard.findByIdAndUpdate(cardId, cardDetails, { new: true });
 
-    CreditCard.findByIdAndUpdate(cardId, { $set: { removed } }, { new: true }, (err, updatedCard) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, updatedCard);
-    });
-};
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedCard);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
+
+async function deleteCreditCard(request, response) {
+    try {
+        const { cardId } = request.body;
+        const removed = {
+            isRemoved: true,
+            removedOn: new Date(),
+        };
+
+        const updatedCard = await CreditCard.findByIdAndUpdate(cardId, { $set: { removed } }, { new: true });
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedCard);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
 module.exports = {
     addCreditCard,

@@ -1,93 +1,70 @@
 const Accounts = require('../models/accounts');
 const { validateAccount } = require('../validation/accounts');
 const Constants = require('../helpers/constants');
+const Response = require('../helpers/responses');
 
-const addAccounts = (request, callback) => {
-    const { userId } = request;
-    const accountData = request.body;
-    const { error } = validateAccount(accountData);
-    if (error) {
-        const response = {
-            status: Constants.STATUS_CODE.BAD_REQUEST,
-            msg: error.details[0].message,
-        };
-        return callback(response, null);
+async function addAccounts(request, response) {
+    try {
+        const { userId } = request;
+        const accountData = request.body;
+        const { error } = validateAccount(accountData);
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
+        }
+        accountData.userId = userId;
+        const newAccount = await Accounts.create(accountData);
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, newAccount);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
-    accountData.userId = userId;
-    Accounts.create(accountData, (err, newAccount) => {
-        if (err) {
-        const response = {
-            status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-            msg: err.message,
-        };
-        return callback(response, null);
-        }
-        callback(null, newAccount);
-    });
-};
+}
 
-const getAccounts = (request, callback) => {
-    const { userId } = request;
-    const query = {
-        userId,
-        'removed.isRemoved' : false,
+async function getAccounts(request, response) {
+    try {
+        const { userId } = request;
+        const query = {
+            userId,
+            'removed.isRemoved': false,
+        };
+        const accounts = await Accounts.find(query);
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, accounts);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
-    Accounts.find(query, (err, accounts) => {
-        if (err) {
-        const response = {
-            status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-            msg: err.message,
-        };
-        return callback(response, null);
-        }
-        callback(null, accounts);
-    });
-};
+}
 
-const updateAccounts = (request, callback) => {
-    const { accountId, ...rest } = request.body;
-    const accountDetails = rest;
-    const { error } = validateAccount(accountDetails);
-    if (error) {
-        const response = {
-            status: Constants.STATUS_CODE.BAD_REQUEST,
-            msg: error.details[0].message,
-        };
-        return callback(response, null);
+async function updateAccounts(request, response) {
+    try {
+        const { accountId, ...rest } = request.body;
+        const accountDetails = rest;
+        const { error } = validateAccount(accountDetails);
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
+        }
+        const updatedAccount = await Accounts.findByIdAndUpdate(accountId, accountDetails, { new: true });
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedAccount);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
-    Accounts.findByIdAndUpdate(accountId, accountDetails, { new: true }, (err, updatedAccount) => {
-        if (err) {
-            const response = {
-            status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-            msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, updatedAccount);
-    });
-};
+}
 
-const deleteAccounts = (request, callback) => {
-    const { accountId } = request.body;
-    const removed = {
-        isRemoved: true,
-        removedOn: new Date(),
-    };
-    Accounts.findByIdAndUpdate(accountId, { $set: { removed } }, { new: true }, (err, updatedAccount) => {
-        if (err) {
-            const response = {
-            status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-            msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, updatedAccount);
-    });
-};
+async function deleteAccounts(request, response) {
+    try {
+        const { accountId } = request.body;
+        const removed = {
+            isRemoved: true,
+            removedOn: new Date(),
+        };
+        const updatedAccount = await Accounts.findByIdAndUpdate(accountId, { $set: { removed } }, { new: true });
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedAccount);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
 module.exports = {
-  addAccounts,
-  getAccounts,
-  updateAccounts,
-  deleteAccounts,
+    addAccounts,
+    getAccounts,
+    updateAccounts,
+    deleteAccounts,
 };

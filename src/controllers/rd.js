@@ -1,110 +1,77 @@
-const RD = require('../models/rd'); // Import the RD model
+const RD = require('../models/rd'); // Import the FD model
+const { validateRD } = require('../validation/rd');
 const Constants = require('../helpers/constants');
+const Response = require('../helpers/responses'); // Import the Response module
 
-// Create a new RD
-const addRD = (request, callback) => {
-    const rdData = request.body;
-
-    RD.create(rdData, (err, newRD) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
+async function addRD(request, response) {
+    try {
+        const RdData = request.body;
+        const { error } = validateRD(RdData);
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
         }
-        callback(null, newRD);
-    });
-};
+        const newRD = await RD.create(RdData);
 
-// Get all RDs
-const getRDs = (request, callback) => {
-    RD.find((err, rds) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, rds);
-    });
-};
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, newRD);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
-// Get a specific RD by ID
-const getRDById = (request, callback) => {
-    const { rdId } = request.params;
+async function getRDs(request, response) {
+    try {
+        const { userId } = request;
+        const query = {
+            userId,
+            'removed.isRemoved': false,
+        };
+        const Rds = await RD.find(query);
 
-    RD.findById(rdId, (err, rd) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        if (!rd) {
-            const response = {
-                status: Constants.STATUS_CODE.NOT_FOUND,
-                msg: 'RD not found',
-            };
-            return callback(response, null);
-        }
-        callback(null, rd);
-    });
-};
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, Rds);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
-// Update a specific RD by ID
-const updateRD = (request, callback) => {
-    const { rdId } = request.params;
-    const updatedData = request.body;
+async function updateRD(request, response) {
+    try {
+        const updatedData = request.body;
 
-    RD.findByIdAndUpdate(rdId, updatedData, { new: true }, (err, updatedRD) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
+        const updatedRD = await RD.findByIdAndUpdate(updatedData.rdId, updatedData, { new: true });
+
         if (!updatedRD) {
-            const response = {
-                status: Constants.STATUS_CODE.NOT_FOUND,
-                msg: 'RD not found',
-            };
-            return callback(response, null);
+            return Response.sendResponse(response, Constants.STATUS_CODE.NOT_FOUND, 'RD not found');
         }
-        callback(null, updatedRD);
-    });
-};
 
-// Delete a specific RD by ID
-const deleteRD = (request, callback) => {
-    const { rdId } = request.params;
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedRD);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
-    RD.findByIdAndRemove(rdId, (err, deletedRD) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
+async function deleteRD(request, response) {
+    try {
+        const { rdId } = request.body;
+        const removed = {
+            isRemoved: true,
+            removedOn: new Date(),
+        };
+
+        const updatedRd = await RD.findByIdAndUpdate(rdId, { $set: { removed } }, { new: true });
+
+        if (!updatedRd) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.NOT_FOUND, 'RD not found');
         }
-        if (!deletedRD) {
-            const response = {
-                status: Constants.STATUS_CODE.NOT_FOUND,
-                msg: 'RD not found',
-            };
-            return callback(response, null);
-        }
-        callback(null, deletedRD);
-    });
-};
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedRd);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
 module.exports = {
-  addRD,
-  getRDs,
-  getRDById,
-  updateRD,
-  deleteRD,
+    addRD,
+    getRDs,
+    updateRD,
+    deleteRD,
 };

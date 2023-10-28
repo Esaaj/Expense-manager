@@ -1,110 +1,77 @@
 const FD = require('../models/fd'); // Import the FD model
+const { validateFd } = require('../validation/fd');
 const Constants = require('../helpers/constants');
+const Response = require('../helpers/responses'); // Import the Response module
 
-// Create a new FD
-const addFD = (request, callback) => {
-    const fdData = request.body;
-
-    FD.create(fdData, (err, newFD) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
+async function addFD(request, response) {
+    try {
+        const fdData = request.body;
+        const { error } = validateFd(fdData);
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
         }
-        callback(null, newFD);
-    });
-};
+        const newFD = await FD.create(fdData);
 
-// Get all FDs
-const getFDs = (request, callback) => {
-    FD.find((err, fds) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, fds);
-    });
-};
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, newFD);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
-// Get a specific FD by ID
-const getFDById = (request, callback) => {
-    const { fdId } = request.params;
+async function getFDs(request, response) {
+    try {
+        const { userId } = request;
+        const query = {
+            userId,
+            'removed.isRemoved': false,
+        };
+        const fds = await FD.find(query);
 
-    FD.findById(fdId, (err, fd) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        if (!fd) {
-            const response = {
-                status: Constants.STATUS_CODE.NOT_FOUND,
-                msg: 'FD not found',
-            };
-            return callback(response, null);
-        }
-        callback(null, fd);
-    });
-};
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, fds);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
-// Update a specific FD by ID
-const updateFD = (request, callback) => {
-    const { fdId } = request.params;
-    const updatedData = request.body;
+async function updateFD(request, response) {
+    try {
+        const updatedData = request.body;
 
-    FD.findByIdAndUpdate(fdId, updatedData, { new: true }, (err, updatedFD) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
+        const updatedFD = await FD.findByIdAndUpdate(updatedData.fdId, updatedData, { new: true });
+
         if (!updatedFD) {
-            const response = {
-                status: Constants.STATUS_CODE.NOT_FOUND,
-                msg: 'FD not found',
-            };
-            return callback(response, null);
+            return Response.sendResponse(response, Constants.STATUS_CODE.NOT_FOUND, 'FD not found');
         }
-        callback(null, updatedFD);
-    });
-};
 
-// Delete a specific FD by ID
-const deleteFD = (request, callback) => {
-    const { fdId } = request.params;
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedFD);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
-    FD.findByIdAndRemove(fdId, (err, deletedFD) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
+async function deleteFD(request, response) {
+    try {
+        const { fdId } = request.body;
+        const removed = {
+            isRemoved: true,
+            removedOn: new Date(),
+        };
+
+        const updatedFd = await FD.findByIdAndUpdate(fdId, { $set: { removed } }, { new: true });
+
+        if (!updatedFd) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.NOT_FOUND, 'FD not found');
         }
-        if (!deletedFD) {
-            const response = {
-                status: Constants.STATUS_CODE.NOT_FOUND,
-                msg: 'FD not found',
-            };
-            return callback(response, null);
-        }
-        callback(null, deletedFD);
-    });
-};
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedFd);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
 module.exports = {
-  addFD,
-  getFDs,
-  getFDById,
-  updateFD,
-  deleteFD,
+    addFD,
+    getFDs,
+    updateFD,
+    deleteFD,
 };

@@ -1,100 +1,77 @@
-const Budget = require('../models/budgets');
-const { validateBudget } = require('../validation/budgets');
+const Budget = require('../models/budget');
+const { validateBudget } = require('../validation/budget');
 const Constants = require('../helpers/constants');
+const Response = require('../helpers/responses'); // Import the Response module
 
-// Create a new budget
-const addBudget = (request, callback) => {
-    const { userId } = request;
-    const budgetData = request.body;
-    const { error } = validateBudget(budgetData);
+async function addBudget(request, response) {
+    try {
+        const { userId } = request;
+        const budgetData = request.body;
+        const { error } = validateBudget(budgetData);
 
-    if (error) {
-        const response = {
-            status: Constants.STATUS_CODE.BAD_REQUEST,
-            msg: error.details[0].message,
-        };
-        return callback(response, null);
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
+        }
+
+        budgetData.userId = userId;
+
+        const newBudget = await Budget.create(budgetData);
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, newBudget);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
+}
 
-    budgetData.userId = userId;
-
-    Budget.create(budgetData, (err, newBudget) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, newBudget);
-    });
-};
-
-// Get all budgets for a user
-const getBudgets = (request, callback) => {
-    const { userId } = request;
-    const query = {
-        userId,
-        'removed.isRemoved': false,
-    };
-
-    Budget.find(query, (err, budgets) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, budgets);
-    });
-};
-
-// Update a budget by ID
-const updateBudget = (request, callback) => {
-    const { budgetId, ...rest } = request.body;
-    const budgetDetails = rest;
-    const { error } = validateBudget(budgetDetails);
-
-    if (error) {
-        const response = {
-            status: Constants.STATUS_CODE.BAD_REQUEST,
-            msg: error.details[0].message,
+async function getBudgets(request, response) {
+    try {
+        const { userId } = request;
+        const query = {
+            userId,
+            'removed.isRemoved': false,
         };
-        return callback(response, null);
+
+        const budgets = await Budget.find(query);
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, budgets);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
+}
 
-    Budget.findByIdAndUpdate(budgetId, budgetDetails, { new: true }, (err, updatedBudget) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
+async function updateBudget(request, response) {
+    try {
+        const { budgetId, ...rest } = request.body;
+        const budgetDetails = rest;
+        const { error } = validateBudget(budgetDetails);
+
+        if (error) {
+            return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
         }
-        callback(null, updatedBudget);
-    });
-};
 
-// Delete a budget by ID
-const deleteBudget = (request, callback) => {
-    const { budgetId } = request.body;
-    const removed = {
-        isRemoved: true,
-        removedOn: new Date(),
-    };
+        const updatedBudget = await Budget.findByIdAndUpdate(budgetId, budgetDetails, { new: true });
 
-    Budget.findByIdAndUpdate(budgetId, { $set: { removed } }, { new: true }, (err, updatedBudget) => {
-        if (err) {
-            const response = {
-                status: Constants.STATUS_CODE.INTERNAL_SERVER_ERROR,
-                msg: err.message,
-            };
-            return callback(response, null);
-        }
-        callback(null, updatedBudget);
-    });
-};
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedBudget);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
+
+async function deleteBudget(request, response) {
+    try {
+        const { budgetId } = request.body;
+        const removed = {
+            isRemoved: true,
+            removedOn: new Date(),
+        };
+
+        const updatedBudget = await Budget.findByIdAndUpdate(budgetId, { $set: { removed } }, { new: true });
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, updatedBudget);
+    } catch (error) {
+        return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
+    }
+}
 
 module.exports = {
     addBudget,

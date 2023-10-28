@@ -15,7 +15,8 @@ module.exports = {
     SERVER_TIMEOUT: 504,
   },
   ERROR_MSGS: {
-    
+    MUTUAL_FUND_NOT_FOUND: 'Mutual Fund not found.',
+    RD_NOT_FOUND: 'RD not found',
     AUTH_FAIL: 'Invalid Credentials.',
     AUTH_HEADER_MISSING: 'AccessKey and SecretKey is required',
     INVALID_AUTH_HEADER: 'AccessKey and SecretKey is not valid',
