@@ -21,8 +21,4 @@ mongoose.connection.on('error', (err) => {
 
 mongoose.connection.on('open', () => {
   logger.info(`Connected to Database`);
-  // mongoose.connection.db.listCollections().toArray(function (err, names) {
-  //   // console.log(names); // [{ name: 'dbname.myCollection' }]
-  //   module.exports.Collection = names;
-// });
 });
