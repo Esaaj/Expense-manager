@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../controllers/auth');
+const user = require('../controllers/user');
+const { verifyJWT } = require('../middleware/auth'); // Import the middleware
 
-router.post('/login', auth.login);
-router.post('/refresh', auth.refresh);
+router.use(verifyJWT); // Apply the middleware to all routes in this file
+router.get('/user', user.getUser);
+router.post('/user', user.addUser);
+router.patch('/user', user.updateUser);
 
 module.exports = router;

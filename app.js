@@ -7,7 +7,8 @@ const port = process.env.PORT
 
 require('./config/db');
 
-const auth = require('./src/routes/user');
+const auth = require('./src/routes/auth');
+const user = require('./src/routes/user');
 const accounts = require('./src/routes/accounts');
 const transactions = require('./src/routes/transactions');
 const budgets = require('./src/routes/budgets');
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', auth);
+app.use('/', user);
 app.use('/', accounts);
 app.use('/', transactions);
 app.use('/', budgets);

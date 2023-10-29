@@ -2,6 +2,7 @@ const CreditCard = require('../models/creditCard');
 const { validateCreditCard } = require('../validation/creditCard');
 const Constants = require('../helpers/constants');
 const Response = require('../helpers/responses'); // Import the Response module
+const { calculateAccountBalance } = require('../helpers/accountBalance');
 
 async function addCreditCard(request, response) {
     try {
@@ -34,8 +35,13 @@ async function getCreditCards(request, response) {
         };
 
         const cards = await CreditCard.find(query);
+        const balancePromises = cards.map(async (account) => {
+            const balance = await calculateAccountBalance(account._id);
+            return { ...account._doc, balance }; // Combine the account info with the balance
+        });
 
-        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, cards);
+        const creditCardWithBalances = await Promise.all(balancePromises);
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, creditCardWithBalances);
     } catch (error) {
         return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }

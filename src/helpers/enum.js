@@ -5,7 +5,6 @@ module.exports = {
     transactionsType: [
         'expense',
         'income',
-        'transfer'
     ],
     interestType: [
         'fixed',

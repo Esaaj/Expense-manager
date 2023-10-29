@@ -9,8 +9,17 @@ const TransactionsSchema = new mongoose.Schema({
         },
         accountId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'accounts',
-            required: true,
+            ref: 'accounts', // Reference the 'accounts' model
+            required: function () {
+              return !this.creditCardId; // Only required for expense transactions
+            },
+        },
+        creditCardId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'creditcards', // Reference the 'creditcards' model
+            required: function () {
+                return this.type === 'expense' && !this.accountId; // Only required for expense transactions without an account
+            },
         },
         description: {
             type: String,

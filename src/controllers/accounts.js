@@ -2,6 +2,7 @@ const Accounts = require('../models/accounts');
 const { validateAccount } = require('../validation/accounts');
 const Constants = require('../helpers/constants');
 const Response = require('../helpers/responses');
+const { calculateAccountBalance } = require('../helpers/accountBalance');
 
 async function addAccounts(request, response) {
     try {
@@ -26,8 +27,18 @@ async function getAccounts(request, response) {
             userId,
             'removed.isRemoved': false,
         };
-        const accounts = await Accounts.find(query);
-        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, accounts);
+        const accountsInfo = await Accounts.find(query);
+
+        // Create an array of promises for balance calculations
+        const balancePromises = accountsInfo.map(async (account) => {
+            const balance = await calculateAccountBalance(account._id);
+            return { ...account._doc, balance }; // Combine the account info with the balance
+        });
+
+        // Wait for all balance calculations to complete
+        const accountsWithBalances = await Promise.all(balancePromises);
+
+        return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, accountsWithBalances);
     } catch (error) {
         return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);
     }
