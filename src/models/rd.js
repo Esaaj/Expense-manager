@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const rdSchema = new mongoose.Schema({
-    accountHolder: {
+    name: {
       type: String,
       required: true,
     },
@@ -10,7 +10,11 @@ const rdSchema = new mongoose.Schema({
       required: true,
     },
     maturityDate: {
-      type: Date,
+      type: String,
+      required: true,
+    },
+    startDate: {
+      type: String,
       required: true,
     },
     interestRate: {
@@ -19,6 +23,10 @@ const rdSchema = new mongoose.Schema({
     },
     // Additional fields specific to RDs
     installmentTenure: {
+      type: Number,
+      required: true,
+    },
+    completedMonths: {
       type: Number,
       required: true,
     },

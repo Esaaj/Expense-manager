@@ -18,6 +18,13 @@ async function addRD(request, response) {
     }
 }
 
+function calculateRDMaturity(P, r, n) {
+    const N = n * (n + 1) / 24;
+    const simpleInterest = (P * N * r)/ 100;
+    const amount = P * n + simpleInterest;
+    return amount.toFixed(2);
+}
+
 async function getRDs(request, response) {
     try {
         const { userId } = request;
@@ -25,8 +32,21 @@ async function getRDs(request, response) {
             userId,
             'removed.isRemoved': false,
         };
-        const Rds = await RD.find(query);
-
+        const projection = {
+            name: 1,
+            monthlyDeposit: 1,
+            maturityDate: 1,
+            startDate: 1,
+            interestRate: 1,
+            installmentTenure: 1,
+            completedMonths: 1,
+        };
+        const Rds = await RD.find(query, projection).lean();
+        Rds.map(rd => {
+            rd.currentValue = calculateRDMaturity(rd.monthlyDeposit, rd.interestRate, rd.completedMonths);
+            rd.remainingMonths = rd.installmentTenure - rd.completedMonths;
+            rd.interestAmountEarned = (rd.currentValue - (rd.completedMonths * rd.monthlyDeposit)).toFixed(2);
+        })
         return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, Rds);
     } catch (error) {
         return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);

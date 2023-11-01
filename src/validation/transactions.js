@@ -16,8 +16,10 @@ const transactionSchema = Joi.object().keys({
   amount: Joi.number().messages({
     'number.base': 'Amount must be a number.',
   }),
-  date: Joi.string().messages({
-    'string.base': 'Date must be a string.',
+  date: Joi.date().iso().messages({
+    'date.base': 'Date must be a valid date string.',
+    'date.format': 'Date must be in the format of YYYY-MM-DD.',
+    'date.format': 'Date must be in the format of YYYY-MM-DD.',
   }),
 }).when(Joi.object({ type: 'transfer' }), {
   then: Joi.object({

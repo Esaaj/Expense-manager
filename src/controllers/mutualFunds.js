@@ -21,6 +21,11 @@ async function createMutualFund(request, response) {
   }
 }
 
+function calculateMutualFundMaturity(P, r) {
+    const amount = P * (1 + (r / 100));
+    return amount.toFixed(2);
+}
+
 async function getAllMutualFunds(request, response) {
   try {
     const { userId } = request;
@@ -28,7 +33,21 @@ async function getAllMutualFunds(request, response) {
         userId,
         'removed.isRemoved': false,
     };
-    const mutualFunds = await MutualFund.find({query});
+    const projection = {
+        name: 1,
+        amount: 1,
+        fundType: 1,
+        riskLevel: 1,
+        currentReturns: 1,
+        expectedReturns: 1,
+        depositDate: 1,
+    };
+    const mutualFunds = await MutualFund.find(query, projection).lean();
+    mutualFunds.map(mutualFund => {
+        mutualFund.currentValue = calculateMutualFundMaturity(mutualFund.amount, mutualFund.currentReturns);
+        mutualFund.expectedValue = calculateMutualFundMaturity(mutualFund.amount, mutualFund.expectedReturns);
+        mutualFund.monthsCompleted =  Math.floor((new Date() - new Date(mutualFund.depositDate)) / (1000 * 60 * 60 * 24 * 30));
+    });
 
     return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, mutualFunds);
   } catch (error) {

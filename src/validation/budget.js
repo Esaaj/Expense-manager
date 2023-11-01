@@ -10,16 +10,16 @@ const budgetSchema = Joi.object({
         'number.min': 'Limit amount cannot be negative.',
         'any.required': 'Limit amount is required.',
     }),
-    startDate: Joi.string().isoDate().required().messages({
-        'string.base': 'Start date must be a string.',
-        'string.isoDate': 'Invalid date format for start date.',
-        'any.required': 'Start date is required.',
+    startDate: Joi.date().iso().messages({
+        'date.base': 'startDate must be a valid date string.',
+        'date.format': 'startDate must be in the format of YYYY-MM-DD.',
+        'date.format': 'startDate must be in the format of YYYY-MM-DD.',
     }),
-    endDate: Joi.string().isoDate().required().messages({
-        'string.base': 'End date must be a string.',
-        'string.isoDate': 'Invalid date format for end date.',
-        'any.required': 'End date is required.',
-    }),
+    endDate: Joi.date().iso().messages({
+        'date.base': 'startDate must be a valid date string.',
+        'date.format': 'startDate must be in the format of YYYY-MM-DD.',
+        'date.format': 'startDate must be in the format of YYYY-MM-DD.',
+    })
 });
 
 const validateBudget = (budget) => {

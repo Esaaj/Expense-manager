@@ -24,6 +24,56 @@ async function addLoan(request, response) {
     }
 }
 
+function calculateLoanStatus(loanAmount, interestType, interest, emi, emiCompleted, tenure) {
+    if(interestType === 'flat') {
+        const amountPaid = emiCompleted * emi;
+        const principalPaid = amountPaid - (amountPaid * interest * tenure/12) / 100;
+        const interestPaid = amountPaid - principalPaid;
+        const totalAmount = loanAmount + (loanAmount * interest * tenure/12) / 100;
+        const totalInterest = totalAmount - loanAmount;
+        const remainingBalance = loanAmount - amountPaid;
+        const remainingPrincipal = loanAmount - principalPaid;
+        const remainingInterest = totalInterest - interestPaid;
+        const remainingTenure = tenure - emiCompleted;
+        
+        return {
+            amountPaid: amountPaid.toFixed(2),
+            principalPaid: principalPaid.toFixed(2),
+            interestPaid: interestPaid.toFixed(2),
+            totalAmount: totalAmount.toFixed(2),
+            totalInterest: totalInterest.toFixed(2),
+            remainingBalance: remainingBalance.toFixed(2),
+            remainingPrincipal: remainingPrincipal.toFixed(2),
+            remainingInterest: remainingInterest.toFixed(2),
+            remainingTenure: remainingTenure.toFixed(2)
+        };
+    } else if(interestType === 'reducing') {
+        // FIX THIS LATER
+        const amountPaid = emiCompleted * emi;
+        const interestPerMonth = interest / 1200;
+        const principalPaid = emi * ((1 - Math.pow(1 + interestPerMonth, tenure - emiCompleted)) / interestPerMonth);
+        const interestPaid = amountPaid - principalPaid;
+        const totalAmount = loanAmount + (loanAmount * interest * tenure/12) / 100;
+        const totalInterest = totalAmount - loanAmount;
+        const remainingBalance = loanAmount - amountPaid;
+        const remainingPrincipal = loanAmount - principalPaid;
+        const remainingInterest = totalInterest - interestPaid;
+        const remainingTenure = tenure - emiCompleted;
+
+        return {
+            amountPaid: amountPaid.toFixed(2),
+            principalPaid: principalPaid.toFixed(2),
+            interestPaid: interestPaid.toFixed(2),
+            totalAmount: totalAmount.toFixed(2),
+            totalInterest: totalInterest.toFixed(2),
+            remainingBalance: remainingBalance.toFixed(2),
+            remainingPrincipal: remainingPrincipal.toFixed(2),
+            remainingInterest: remainingInterest.toFixed(2),
+            remainingTenure: remainingTenure.toFixed(2)
+        };
+    }
+}
+
 async function getLoans(request, response) {
     try {
         const { userId } = request;
@@ -33,8 +83,23 @@ async function getLoans(request, response) {
             'removed.isRemoved': false,
         };
 
-        const loans = await Loans.find(query);
+        const projection = {
+            name: 1,
+            description: 1,
+            loanAmount: 1,
+            startDate: 1,
+            interest: 1,
+            emi: 1,
+            emiCompleted: 1, 
+            tenure: 1,
+            interestType: 1 
+        }
 
+        const loans = await Loans.find(query, projection).lean();
+        loans.map(loan => {
+            const loanStatus = calculateLoanStatus(loan.loanAmount, loan.interestType, loan.interest, loan.emi, loan.emiCompleted, loan.tenure);
+            loan.loanStatus = loanStatus;
+        });
         return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, loans);
     } catch (error) {
         return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);

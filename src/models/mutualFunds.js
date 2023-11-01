@@ -1,19 +1,11 @@
 const mongoose = require("mongoose");
 
 const mutualFundSchema = new mongoose.Schema({
-    fundName: {
+    name: {
       type: String,
       required: true,
     },
-    fundManager: {
-      type: String,
-      required: true,
-    },
-    nav: {
-      type: Number,
-      required: true,
-    },
-    investmentAmount: {
+    amount: {
       type: Number,
       required: true,
     },
@@ -23,6 +15,18 @@ const mutualFundSchema = new mongoose.Schema({
     },
     riskLevel: {
       type: String,
+      required: true,
+    },
+    depositDate: {
+      type: String,
+      required: true,
+    },
+    currentReturns: {
+      type: Number,
+      required: true,
+    },
+    expectedReturns: {
+      type: Number,
       required: true,
     },
     removed: {
