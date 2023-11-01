@@ -18,12 +18,14 @@ async function addRD(request, response) {
     }
 }
 
+
 function calculateRDMaturity(P, r, n) {
     const N = n * (n + 1) / 24;
     const simpleInterest = (P * N * r)/ 100;
     const amount = P * n + simpleInterest;
     return amount.toFixed(2);
 }
+
 
 async function getRDs(request, response) {
     try {
@@ -47,6 +49,7 @@ async function getRDs(request, response) {
             rd.remainingMonths = rd.installmentTenure - rd.completedMonths;
             rd.interestAmountEarned = (rd.currentValue - (rd.completedMonths * rd.monthlyDeposit)).toFixed(2);
         })
+
         return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, Rds);
     } catch (error) {
         return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);

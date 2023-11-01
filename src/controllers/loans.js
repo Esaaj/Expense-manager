@@ -100,6 +100,8 @@ async function getLoans(request, response) {
             const loanStatus = calculateLoanStatus(loan.loanAmount, loan.interestType, loan.interest, loan.emi, loan.emiCompleted, loan.tenure);
             loan.loanStatus = loanStatus;
         });
+        const loans = await Loans.find(query);
+
         return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, loans);
     } catch (error) {
         return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);

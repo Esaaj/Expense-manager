@@ -1,3 +1,4 @@
+
 const moment = require('moment'); // Import momentjs for date manipulation
 const FD = require('../models/fd'); // Import the FD model
 const { validateFd } = require('../validation/fd');
@@ -19,6 +20,7 @@ async function addFD(request, response) {
     }
 }
 
+
 function calculateFDDeposit(P, r, n, t) {
     // Convert the annual interest rate (r) to decimal
     r = r / 100;
@@ -29,7 +31,6 @@ function calculateFDDeposit(P, r, n, t) {
     return A;
 }
 
-
 async function getFDs(request, response) {
     try {
         const { userId } = request;
@@ -37,6 +38,7 @@ async function getFDs(request, response) {
             userId,
             'removed.isRemoved': false,
         };
+
         const projection = {
             name: 1,
             amount: 1,
@@ -56,6 +58,9 @@ async function getFDs(request, response) {
             fd.currentValue = currentValue.toFixed(2);
             fd.interestAmountEarned = (currentValue - fd.amount).toFixed(2);
         })
+
+        const fds = await FD.find(query);
+
         return Response.sendResponse(response, Constants.STATUS_CODE.OK, Constants.INFO_MSGS.SUCCESS, fds);
     } catch (error) {
         return Response.sendResponse(response, Constants.STATUS_CODE.INTERNAL_SERVER_ERROR, error.message);

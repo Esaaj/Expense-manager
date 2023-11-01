@@ -25,6 +25,7 @@ const fdSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
+
     compoundingFrequency: {
       type: Number,
       required: true,
