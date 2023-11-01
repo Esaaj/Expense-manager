@@ -12,9 +12,9 @@ const loansSchema = Joi.object({
         'number.min': 'Loan amount cannot be negative.',
         'any.required': 'Loan amount is required.',
     }),
-    startDate: Joi.string().isoDate().required().messages({
-        'string.base': 'Start date must be a string.',
-        'string.isoDate': 'Invalid date format for start date.',
+    startDate: Joi.date().iso().required().messages({
+        'date.base': 'Start date must be a valid date string.',
+        'date.format': 'Start date must be in the format of YYYY-MM-DD.',
         'any.required': 'Start date is required.',
     }),
     interest: Joi.number().min(0).required().messages({

@@ -14,6 +14,7 @@ const addTransactions = async (request, response) => {
             return Response.sendResponse(response, Constants.STATUS_CODE.BAD_REQUEST, error.details[0].message);
         }
 
+
         if(transactionData !== 'transfer') {
             transactionData.userId = userId;
             await Transactions.create(transactionData);
@@ -27,6 +28,17 @@ const addTransactions = async (request, response) => {
                 accountId: fromAccountId
             };
             const incomeData = {
+                description,
+                amount,
+                date,
+                type: 'income',
+                accountId: toAccountId
+            };
+            await Promise.all([Transactions.create(expenseData), Transactions.create(incomeData)]);
+        } else {
+            transactionData.userId = userId;
+            await Transactions.create(transactionData);
+        }
                 description, 
                 amount, 
                 date,

@@ -1,32 +1,43 @@
 const Joi = require('joi');
+const { fundType, riskLevel } = require('../helpers/enum');
 
 // Define the validation schema for Mutual Fund data
 const mutualFundSchema = Joi.object({
-  fundName: Joi.string().required().messages({
+  name: Joi.string().required().messages({
     'string.base': 'Fund name must be a string.',
     'any.required': 'Fund name is required.',
   }),
-  fundManager: Joi.string().required().messages({
-    'string.base': 'Fund manager must be a string.',
-    'any.required': 'Fund manager is required.',
-  }),
-  nav: Joi.number().min(0).required().messages({
-    'number.base': 'NAV (Net Asset Value) must be a number.',
-    'number.min': 'NAV cannot be negative.',
-    'any.required': 'NAV is required.',
-  }),
-  investmentAmount: Joi.number().min(0).required().messages({
+  amount: Joi.number().min(0).required().messages({
     'number.base': 'Investment amount must be a number.',
     'number.min': 'Investment amount cannot be negative.',
     'any.required': 'Investment amount is required.',
   }),
-  fundType: Joi.string().required().messages({
+  fundType: Joi.string().required().valid(...fundType).messages({
     'string.base': 'Fund type must be a string.',
     'any.required': 'Fund type is required.',
+    'any.only': 'Invalid fundType',
   }),
-  riskLevel: Joi.string().required().messages({
+  riskLevel: Joi.string().required().valid(...riskLevel).messages({
     'string.base': 'Risk level must be a string.',
     'any.required': 'Risk level is required.',
+    'any.only': 'Invalid riskLevel',
+  }),
+  currentReturns: Joi.number().min(0).max(100).required().messages({
+    'number.base': 'Current returns must be a number.',
+    'number.min': 'Current returns cannot be negative.',
+    'number.max': 'Current returns cannot be greater than 100.',
+    'any.required': 'Current returns is required.',
+  }),
+  expectedReturns: Joi.number().min(0).max(100).required().messages({
+    'number.base': 'Expected returns must be a number.',
+    'number.min': 'Expected returns cannot be negative.',
+    'number.max': 'Expected returns cannot be greater than 100.',
+    'any.required': 'Expected returns is required.',
+  }),
+  depositDate: Joi.date().iso().messages({
+    'date.base': 'depositDate must be a valid date string.',
+    'date.format': 'depositDate must be in the format of YYYY-MM-DD.',
+    'date.format': 'depositDate must be in the format of YYYY-MM-DD.',
   }),
 });
 

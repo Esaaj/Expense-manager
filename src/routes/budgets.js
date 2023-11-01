@@ -9,5 +9,7 @@ router.post('/budget', budget.addBudget);
 router.get('/budget', budget.getBudgets);
 router.patch('/budget', budget.updateBudget);
 router.delete('/budget', budget.deleteBudget);
+router.get('/budget/summary', budget.getBudgetSummary);
+
 
 module.exports = router;

@@ -1,16 +1,20 @@
 const mongoose = require("mongoose");
 
 const fdSchema = new mongoose.Schema({
-    accountHolder: {
+    name: {
       type: String,
       required: true,
     },
-    principalAmount: {
+    amount: {
       type: Number,
       required: true,
     },
     maturityDate: {
-      type: Date,
+      type: String,
+      required: true,
+    },
+    depositDate: {
+      type: String,
       required: true,
     },
     interestRate: {
@@ -18,6 +22,11 @@ const fdSchema = new mongoose.Schema({
       required: true,
     },
     lockInPeriod: {
+      type: Number,
+      required: true,
+    },
+
+    compoundingFrequency: {
       type: Number,
       required: true,
     },

@@ -7,8 +7,19 @@ module.exports = {
         'income',
     ],
     interestType: [
-        'fixed',
-        'variable'
-    ]
+        'flat',
+        'reducing'
+    ],
+    fundType: [
+        'Equity',
+        'Debt',
+        'Hybrid',
+        'Other',
+      ],
+    riskLevel: [
+        'Low',
+        'Moderate',
+        'High',
+    ],
 };
   
